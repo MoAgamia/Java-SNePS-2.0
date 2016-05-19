@@ -15,6 +15,7 @@ import sneps.Relation;
 import sneps.Nodes.Node;
 import sneps.Nodes.VariableNode;
 import sneps.SyntaticClasses.Pattern;
+import java_cup.parser;
 import java_cup.runtime.Symbol;
 
 public class AP {

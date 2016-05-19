@@ -1,46 +1,84 @@
 package snip;
 
 import java.util.ArrayList;
-
 import sneps.Nodes.Node;
-import SNeBR.Context;
+import sneps.match.Substitutions;
 
 public abstract class Channel {
-	
+
 	private Filter filter;
 	private Switch switch_;
-	private Context context;
-	private Node destination;
+	private int contextID;
+	private Node requester;
+	private Node reporter;
 	private boolean valve;
-	private Substitutions tar;
 	private ArrayList<Report> reportsBuffer;
-	
-	public Channel(Filter f, Switch s, Context c, Node d, boolean v) {
-		this.filter = f;
-		this.switch_ = s;
-		this.context = c;
-		this.destination = d;
+
+	public Channel() {
+		filter = new Filter();
+		switch_ = new Switch();
+		reportsBuffer = new ArrayList<Report>();
+	}
+
+	public Channel(Substitutions switchSubstitution, Substitutions filterSubstitutions, int contextID, Node requester,
+			Node reporter, boolean v) {
+		this.filter = new Filter(filterSubstitutions);
+		this.switch_ = new Switch(switchSubstitution);
+		this.contextID = contextID;
+		this.requester = requester;
+		this.reporter = reporter;
 		this.valve = v;
-		this.tar = new Substitutions();
+		this.reporter = reporter;
+		reportsBuffer = new ArrayList<Report>();
 	}
-	
-	public Context getContext() {
-		return context;
+
+	public int getContextID() {
+		return contextID;
 	}
-	
+
 	public boolean isValveOpen() {
 		return valve;
 	}
-	
+
+	public void clearReportsBuffer() {
+		reportsBuffer.clear();
+	}
+
 	public void setValve(boolean valve) {
 		this.valve = valve;
 	}
-	
-	public void addReport(Report report) {
-		reportsBuffer.add(report);
+
+	public boolean addReport(Report report) {
+		System.out.println("Can pass " + filter.canPass(report));
+		if (filter.canPass(report) && contextID == report.getContextID()) {
+			System.out.println("\n\nThe Switch data:\n" + switch_);
+			switch_.switchReport(report);
+			reportsBuffer.add(report);
+			Runner.addToHighQueue(requester);
+			return true;
+		}
+		return false;
 	}
-	
+
+	public Filter getFilter() {
+		return filter;
+	}
+
+	public Switch getSwitch() {
+		return switch_;
+	}
+
+	public Node getRequester() {
+		return requester;
+	}
+
+	public Node getReporter() {
+		return reporter;
+	}
+
 	public ArrayList<Report> getReportsBuffer() {
 		return reportsBuffer;
 	}
+
+
 }
