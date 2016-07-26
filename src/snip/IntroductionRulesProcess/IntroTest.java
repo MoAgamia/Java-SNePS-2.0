@@ -1,5 +1,16 @@
 package snip.IntroductionRulesProcess;
 
+/*
+
+This class is a test for the introduction process.
+
+The main structure is creating a temporary SNePS environment, then calling the "BeginIntroduction" method from the "IntroductionRule" class, to check if the introduction process gives the same results required.
+
+The process starts by creating all the required components for a new test environment, then for each logical connective in SNePS (e.g. And-Entailment, Or-Entailment, ...) it tests two things, firstly, if given a successful environment and rule if process succeeds to introduce the rule or not, and given a wrong enenvironmentr wrong rule if process fails to introduce the rule or not.
+
+Note: Due to some problems occurring when retrieving all the reports from querying the system, the reports are all created customly to test, in order to simulate and test the introduction process.
+
+ */
 
 import SNeBR.SNeBR;
 import sneps.CaseFrame;
@@ -785,24 +796,24 @@ public class IntroTest {
         introrep6.add(report20);
         setIntroReports6(introrep6);
 
-//        System.out.println("------------------------------------");
-//        IntroductionRule.BeginIntroduction(csqRule6);
+        System.out.println("------------------------------------");
+        IntroductionRule.BeginIntroduction(csqRule6);
 
 
 //        =============================================
-//        Start of Generic AndOr test
+//        Start of Generic Thresh test
 //        =============================================
 
-//        SNeBR.setCurrentContext(c6);
-//
-//        SNeBR.assertProposition((PropositionNode) cons);
-//
-//        Channel csqRule7 = new IntroductionChannel(new LinearSubstitutions(), new LinearSubstitutions(), SNeBR.getCurrentContext().getId(), ant1, ThreshRule, true);
+        SNeBR.setCurrentContext(c6);
+
+        SNeBR.assertProposition((PropositionNode) cons);
+
+        Channel csqRule7 = new IntroductionChannel(new LinearSubstitutions(), new LinearSubstitutions(), SNeBR.getCurrentContext().getId(), ant1, ThreshRule, true);
 
 
 
-//        System.out.println("------------------------------------");
-//        IntroductionRule.BeginIntroduction(csqRule7);
+        System.out.println("------------------------------------");
+        IntroductionRule.BeginIntroduction(csqRule7);
 
 
     }

@@ -1,11 +1,25 @@
 package snip.IntroductionRulesProcess;
+/*
 
+This class contains the methods responsible for applying the logic behind introduction rules, in order to decide mainly if rule can or can not be introduced.
+
+The main structure of this class is firstly, a main method (BeginIntroduction) responsible initiating the introduction process. Secondly, for each logical connective in SNePS a handler method (e.g. AndEntRuleHandler) is responsible for applying its logic.
+
+The process starts with acquiring the channel with the rule that wises to be introduced, then checks whether the rule is valid to be introduced or not. If the check fails we stop and rule introduction does not introduce the rule, on the other hand, if it passes the check, each connective (e.g. And-Entailment, Or-Entailment, ...) is then handled by its corresponding handler method. Lastly, after the handler method is done, the result is whether the rule is valid to be introduced or not.
+
+Note: Due to some problems occurring when retrieving all the reports from querying the system, the method responsible for retrieving the reports is custom made for the test class "IntroTest", in order to simulate and test the introduction process on its own.
+ */
 
 import SNeBR.SNeBR;
 import com.sun.org.apache.regexp.internal.RE;
+import com.sun.org.apache.xpath.internal.SourceTree;
+import sneps.CaseFrame;
+import sneps.Network;
 import sneps.Nodes.*;
 import SNeBR.Context;
 import SNeBR.Support;
+import sneps.Relation;
+import sneps.SemanticClasses.Individual;
 import sneps.SemanticClasses.Proposition;
 import snip.Channel;
 import snip.Report;
@@ -17,6 +31,7 @@ import java.util.*;
 
 public class IntroductionRule {
 
+//    This method is responsible for taking the channel with the rule that wants to be introduced, then applying a check to see if its possible or not, if it fails then whole process stops, if not, then it passes the rule to its corresponding handler method.
 
     public static void BeginIntroduction(Channel channel){
 
@@ -28,12 +43,12 @@ public class IntroductionRule {
 
             if (Node.getClass().getName().contains("AndOrNode")) {
                 System.out.println("This is AndOr node : " + Node + " Starting introduction");
-                AndOrRuleHandler((PropositionNode) Node, ContextID);
-//                GenericAndOrRuleHandler((PropositionNode) Node, ContextID);
+//                AndOrRuleHandler((PropositionNode) Node, ContextID);
+                GenericAndOrRuleHandler((PropositionNode) Node, ContextID);
             } else if (Node.getClass().getName().contains("ThreshNode")) {
                 System.out.println("This is Thresh node : " + Node + " Starting introduction");
-                ThreshRuleHandler((PropositionNode) Node, ContextID);
-//                GenericThreshRuleHandler((PropositionNode) Node, ContextID);
+//                ThreshRuleHandler((PropositionNode) Node, ContextID);
+                GenericThreshRuleHandler((PropositionNode) Node, ContextID);
             } else if (Node.getClass().getName().contains("AndNode")) {
                 System.out.println("This is And Entailment node : " + Node + " Starting introduction");
                 AndEntRuleHandler((PropositionNode) Node, ContextID);
@@ -59,6 +74,8 @@ public class IntroductionRule {
         System.out.println("=======================");
 
     }
+
+//    This method is responsible for checking if the rule has all the properties to be introduced or not.
 
     private static boolean CanBeIntroduced(PropositionNode Node, Channel channel){
         System.out.println("Can start introduction");
@@ -89,6 +106,8 @@ public class IntroductionRule {
         System.out.println("");
         return true;
     }
+
+//    This method is responsible for handling the logic to decide whether the And-Entailment should be introduced or not.
 
     private static void AndEntRuleHandler(PropositionNode AndNode, int ContextID){
         System.out.println("And Entailment Handler");
@@ -136,6 +155,8 @@ public class IntroductionRule {
 
     }
 
+//    This method is responsible for processing all the reports of the And-Entailment, and returns whether the reports can support consequence or not.
+
     private static int isAndEntReportSetValid(ArrayList<Report> reports, Node RuleNode, ArrayList<Node> antecedents){
 
         System.out.println("Is And Entailment report set valid");
@@ -178,6 +199,8 @@ public class IntroductionRule {
 
         return isValid;
     }
+
+    //    This method is responsible for handling the logic to decide whether the Or-Entailment should be introduced or not.
 
     private static void  OrEntRuleHandler(PropositionNode OrNode, int ContextID){
         System.out.println("Or Entailment Handler");
@@ -224,6 +247,9 @@ public class IntroductionRule {
 
     }
 
+    //    This method is responsible for processing all the reports of the Or-Entailment, and returns whether the reports can support consequence or not.
+
+
     private static int isOrEntReportSetValid(ArrayList<Report> reports, Node RuleNode, ArrayList<Node> antecedents){
         System.out.println("Is Or Entailment report set valid");
         System.out.println("---------------------------");
@@ -268,6 +294,8 @@ public class IntroductionRule {
         return isValid;
     }
 
+    //    This method is responsible for handling the logic to decide whether the Numerical-Entailment should be introduced or not.
+
     private static void NumericalRuleHandler(PropositionNode NumericalNode, int ContextID) {
         System.out.println("Numerical Handler");
         System.out.println("===========================");
@@ -311,6 +339,9 @@ public class IntroductionRule {
 
 
     }
+
+    //    This method is responsible for processing all the reports of the Numerical-Entailment, and returns whether the reports can support consequence or not.
+
 
     private static int isNumEntReportSetValid(ArrayList<Report> reports, Node RuleNode, ArrayList<Node> antecedents){
 
@@ -363,6 +394,8 @@ public class IntroductionRule {
         return isValid;
     }
 
+    //    This method is responsible for handling the logic to decide whether the AndOr should be introduced or not.
+
     private static void AndOrRuleHandler(PropositionNode AndOrNode, int ContextID) {
         System.out.println("AndOr Handler");
         System.out.println("===========================");
@@ -391,6 +424,8 @@ public class IntroductionRule {
 
 
     }
+
+    //    This method is responsible for processing all the reports of the AndOr, and returns whether the reports can support consequence or not.
 
     private static int isAndOrReportSetValid(ArrayList<Report> reports, Node RuleNode, ArrayList<Node> arguments){
 
@@ -436,6 +471,8 @@ public class IntroductionRule {
         return isValid;
     }
 
+    //    This method is responsible for handling the logic to decide whether the Thresh should be introduced or not.
+
     private static void ThreshRuleHandler(PropositionNode ThreshNode, int ContextID) {
         System.out.println("Thresh Handler");
         System.out.println("===========================");
@@ -465,6 +502,8 @@ public class IntroductionRule {
 
 
     }
+
+    //    This method is responsible for processing all the reports of the Thresh, and returns whether the reports can support consequence or not.
 
     private static int isThreshReportSetValid(ArrayList<Report> reports, Node RuleNode, ArrayList<Node> arguments){
 
@@ -509,7 +548,9 @@ public class IntroductionRule {
         return isValid;
     }
 
-    private static void GenericAndOrRuleHandler(PropositionNode AndOrNode, int ContextID){
+    //    This method is responsible for handling the logic to decide whether the general And-Entailment should be introduced or not. This method is similar to And-Entailment however, it applies a more generic way.
+
+    private static int GenericAndOrRuleHandler(PropositionNode AndOrNode, int ContextID){
 
         System.out.println("Generic AndOr Handler");
         System.out.println("===========================");
@@ -526,7 +567,17 @@ public class IntroductionRule {
 
         ArrayList<ArrayList<Node>> ReqNodes1 = Combinations(arguments.size(), ((AndOrNode) AndOrNode).getMax(), arguments);
 
-        ArrayList<ArrayList<Node>> ReqNodes2 = Combinations(arguments.size(), ( arguments.size() - ((AndOrNode) AndOrNode).getMin() ) + 1, arguments);
+        ArrayList<ArrayList<Node>> ReqPerm2 = Combinations(arguments.size(), arguments.size() - ((AndOrNode) AndOrNode).getMin() , arguments);
+
+        ArrayList<ArrayList<Node>> ReqNodes2 = new ArrayList<ArrayList<Node>>();
+
+        for (ArrayList<Node> nodes : ReqPerm2){
+            ArrayList<Node> TempArguments = new ArrayList<Node>(arguments);
+
+            TempArguments.removeAll(nodes);
+            ReqNodes2.add(TempArguments);
+        }
+
 
         HashSet<ArrayList<Node>> ReqNodesUni = new HashSet<ArrayList<Node>>();
         ReqNodesUni.addAll(ReqNodes1);
@@ -559,13 +610,24 @@ public class IntroductionRule {
             }
         }
 
-        if (contextNum == TempContexts.size() && isNeg == false && isWrong == false){
+        if (isWrong){
+            System.out.println("Rule is wrong");
+            return 0;
+        } else if (isNeg == true && isWrong == false){
+            System.out.println("Rule can not be introduced, but its negation can be introduced");
+            return -1;
+        } else if (contextNum == TempContexts.size() && isNeg == false && isWrong == false){
             System.out.println("Rule is correct and can be introduced");
-        } else if (isNeg == false && isWrong == false){
+            return 1;
+        } else {
             System.out.println("Rule is wrong not enough information");
+            return  2;
         }
 
     }
+
+    //    This method is responsible for processing all the reports of the generic And-Entailment, and returns whether the reports can support consequence or not.
+
 
     private static int isGenericAndOrReportSetValid(ArrayList<Report> reports, Node RuleNode, ArrayList<Node> arguments, ArrayList<Node> ReqNodes){
 
@@ -610,28 +672,105 @@ public class IntroductionRule {
         return isValid;
     }
 
-    private static void GenericThreshRuleHandler(PropositionNode ThreshNode, int ContextID){
+    //    This method is responsible for handling the logic to decide whether the general Thresh should be introduced or not. This method is similar to Thresh however, it applies a more generic way.
+
+    private static void GenericThreshRuleHandler(PropositionNode ThreshNode, int ContextID) {
         System.out.println("Generic Thresh Handler");
         System.out.println("===========================");
 
         ArrayList<Node> arguments = new ArrayList<Node>();
-        ArrayList<Context> TempContexts = new ArrayList<Context>();
-        int contextNum = 0;
-        boolean isNeg = false;
-        boolean isWrong = false;
 
-        for(Node ant : ThreshNode.getDownCableSet().getDownCable("arg").getNodeSet()){arguments.add(ant);}
-        System.out.println("");
-        System.out.println("Arguments of rule " + arguments);
+        for (Node ant : ThreshNode.getDownCableSet().getDownCable("arg").getNodeSet()) {
+            arguments.add(ant);
+        }
 
-        ArrayList<ArrayList<Node>> ReqNodes = Combinations(arguments.size(), ((ThreshNode) ThreshNode).getThresh(), arguments);
+        Individual individual = new Individual();
+        Node ThreshMin = null;
+        try {
+            ThreshMin = Network.buildBaseNode(Integer.toString(((ThreshNode) ThreshNode).getThresh()), individual);
+        } catch (Exception exp) {
+        }
 
-        ReqNodes.add(arguments);
 
-        System.out.println(ReqNodes);
+        individual = new Individual();
+        Node ThreshMax = null;
+        try {
+            ThreshMax = Network.buildBaseNode(Integer.toString(((ThreshNode) ThreshNode).getThreshMax()), individual);
+        } catch (Exception exp) {
+        }
 
+        individual = new Individual();
+        Node zero = null;
+        try {
+            zero = Network.buildBaseNode("0", individual);
+        } catch (Exception exp) {
+        }
+
+        individual = new Individual();
+        Node maxArguments = null;
+        try {
+            maxArguments = Network.buildBaseNode(Integer.toString(arguments.size()), individual);
+        } catch (Exception exp) {
+        }
+
+        Object[][] a1 = new Object[(arguments.size()) + 2][2];
+
+        for (int i = 0; i < arguments.size(); i++) {
+            a1[i][0] = Relation.arg;
+            a1[i][1] = arguments.get(i);
+        }
+
+        a1[arguments.size()][0] = Relation.min;
+        a1[arguments.size()][1] = zero;
+        a1[(arguments.size()) + 1][0] = Relation.max;
+        a1[(arguments.size()) + 1][1] = ThreshMin;
+
+        AndOrNode AndOrRule1 = null;
+        AndOrNode AndOrRule2 = null;
+
+        try {
+            AndOrRule1 = (AndOrNode) Network.buildMolecularNode(a1, CaseFrame.andOrRule);
+        } catch (Exception exp) {
+        }
+
+        System.out.println(AndOrRule1);
+
+        a1[arguments.size()][0] = Relation.min;
+        a1[arguments.size()][1] = ThreshMax;
+        a1[(arguments.size()) + 1][0] = Relation.max;
+        a1[(arguments.size()) + 1][1] = maxArguments;
+
+        try {
+            AndOrRule2 = (AndOrNode) Network.buildMolecularNode(a1, CaseFrame.andOrRule);
+        } catch (Exception exp) {
+        }
+
+        System.out.println(AndOrRule2);
+
+        int ResultOfAndOrRule1 = GenericAndOrRuleHandler(AndOrRule1, ContextID);
+        int ResultOfAndOrRule2 = GenericAndOrRuleHandler(AndOrRule2, ContextID);
+
+        System.out.println("################################");
+        System.out.println("################################");
+
+        if (ResultOfAndOrRule1 == 1 && ResultOfAndOrRule2 == 1){
+
+            System.out.println("Rule is correct and can be introduced");
+        }
+
+        if (ResultOfAndOrRule1 == -1 && ResultOfAndOrRule2 == -1) {
+            System.out.println("Rule can not be introduced, but its negation can be introduced");
+        }
+
+        if (ResultOfAndOrRule1 == 2 && ResultOfAndOrRule2 == 2) {
+            System.out.println("Rule is wrong not enough information");
+        }
+
+        System.out.println("Rule is wrong and can not be introduced");
 
     }
+
+//    This method is responsible for creating a new context for each group of required nodes.
 
     private static ArrayList<Context> GetGenericAndOrTempContext(int argumentsNum, int AndOrMax, ArrayList<Node> arguments, int ContextID, ArrayList<ArrayList<Node>> ReqNodes){
 
@@ -647,6 +786,8 @@ public class IntroductionRule {
 
     }
 
+//    This method is responsible for just deciding which of four outcomes of introduction process should be concluded.
+
     private static void ConcludeIntroduction(boolean wrongRule, int PosCount, int NegCount, int NoOfConsequences){
 
         if (wrongRule == true) {
@@ -658,7 +799,10 @@ public class IntroductionRule {
         } else {
             System.out.println("Failed to introduce the Rule, not enough information");
         }
+
     }
+
+//    This method is responsible for creating a new context with nodes given.
 
     private static Context getTempContext(int ContextID, ArrayList<Node> nodes) {
 //        System.out.println("---------------------------");
@@ -686,6 +830,8 @@ public class IntroductionRule {
         return tempContext;
 
     }
+
+//    This method is responsible for getting the reports from test class (for And-Entailment, Or-Entailment, ...) just to simulate the process and must be changed when some problems are fixed.
 
     private static ArrayList<Report> getConsequentReports (Node consequent, Node rule, Context context){
 
@@ -724,6 +870,8 @@ public class IntroductionRule {
         return RepSet;
     }
 
+    //    This method is responsible for getting the reports from test class (for AndOr & thresh) just to simulate the process and must be changed when some problems are fixed.
+
     private static ArrayList<Report> getConsequentReports (Node rule, Context context, int gen){
 
         ArrayList<Report> RepSet = new ArrayList<>();
@@ -750,12 +898,15 @@ public class IntroductionRule {
         return RepSet;
     }
 
+//    This method is responsible for getting all the possible combinations of nodes given.
 
     public static ArrayList<ArrayList<Node>> Combinations(int n, int k, ArrayList<Node> nodes) {
         ArrayList<ArrayList<Node>> rslt = new ArrayList<ArrayList<Node>>();
         dfs(new Stack<Node>(), 1, n, k, rslt, nodes);
         return rslt;
     }
+
+//    This method is responsible for recursively making all the possible combinations for the combinations method.
 
     private static void dfs(Stack<Node> path, int index, int n, int k, ArrayList<ArrayList<Node>> rslt, ArrayList<Node> nodes){
         // ending case
@@ -773,3 +924,7 @@ public class IntroductionRule {
     }
 
 }
+
+
+
+
